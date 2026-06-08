@@ -1,0 +1,8 @@
+# With real Claude responses:
+export ANTHROPIC_API_KEY=sk-ant-...
+mvn spring-boot:run -Pnexus
+
+# Demo mode (no API key needed — simulates streaming):
+mvn spring-boot:run -Dspring-boot.run.arguments="--app.demo-mode=true"
+
+http://localhost:9090
