@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title th:replace="${pageTitle} ?: 'Telestaff SDLC Agents Portal'">Telestaff SDLC Portal</title>
+
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"/>
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet"/>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+    <!-- Custom UKG Theme -->
+    <link href="/css/ukg-theme.css" rel="stylesheet"/>
+    <!-- HTMX -->
+    <script src="https://unpkg.com/htmx.org@1.9.12"></script>
+    <!-- Marked.js for Markdown -->
+    <script src="https://cdn.jsdelivr.net/npm/marked@11.2.0/marked.min.js"></script>
+    <!-- Highlight.js for code -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css"/>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+</head>
+<body>
+
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg ukg-navbar sticky-top" th:fragment="navbar">
+    <div class="container-fluid px-4">
+        <a class="navbar-brand d-flex align-items-center gap-2" href="/">
+            <div class="ukg-logo-mark">
+                <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <rect width="32" height="32" rx="8" fill="#ffffff" fill-opacity="0.15"/>
+                    <path d="M8 10h4v8a4 4 0 0 0 8 0v-8h4v8a8 8 0 0 1-16 0v-8z" fill="white"/>
+                    <circle cx="22" cy="22" r="3" fill="#5BC4F5"/>
+                </svg>
+            </div>
+            <div>
+                <span class="fw-700 text-white">UKG</span>
+                <span class="text-white-60 ms-1 fs-sm">Telestaff SDLC Portal</span>
+            </div>
+        </a>
+
+        <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navMenu">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navMenu">
+            <ul class="navbar-nav me-auto ms-4 gap-1">
+                <li class="nav-item">
+                    <a class="nav-link text-white-80" href="/"><i class="bi bi-grid-3x3-gap me-1"></i>Agents</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-white-80" href="/history"><i class="bi bi-clock-history me-1"></i>History</a>
+                </li>
+            </ul>
+
+            <div class="d-flex align-items-center gap-3">
+                <span class="badge ukg-badge-version">v1.0.0</span>
+                <div class="ukg-user-avatar">HJ</div>
+            </div>
+        </div>
+    </div>
+</nav>
+
+<!-- Toast Container -->
+<div class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 9999;" id="toastContainer"
+     th:fragment="toasts"></div>
+
+<!-- Demo Mode Banner — included in every page template after </nav> -->
+<div th:fragment="demoBanner" th:if="${demoMode}" class="demo-mode-banner" role="status" aria-live="polite">
+    <span class="demo-pulse-dot" aria-hidden="true"></span>
+    🎭 <strong>DEMO MODE</strong>&nbsp;&mdash;&nbsp;responses are AI-simulated previews, not live agent output
+</div>
+
+</body>
+</html>

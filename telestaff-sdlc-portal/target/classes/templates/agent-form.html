@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title th:text="${agent.name} + ' — UKG SDLC Portal'">Agent — UKG SDLC Portal</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"/>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&amp;display=swap" rel="stylesheet"/>
+    <link href="/css/ukg-theme.css" rel="stylesheet"/>
+</head>
+<body class="ukg-body">
+
+<!-- ═══════════════ NAVBAR ═══════════════ -->
+<nav class="ukg-navbar sticky-top">
+    <div class="container-xl px-4 h-100">
+        <div class="d-flex align-items-center justify-content-between h-100">
+            <div class="d-flex align-items-center gap-3">
+                <a href="/" class="d-flex align-items-center gap-3 text-decoration-none">
+                    <div class="ukg-wordmark">
+                        <span class="ukg-wordmark-letters">UKG</span>
+                        <span class="ukg-wordmark-tm">™</span>
+                    </div>
+                    <div style="width:1px;height:28px;background:rgba(255,255,255,.18);flex-shrink:0"></div>
+                    <div class="lh-sm">
+                        <div class="fw-600 text-white" style="font-size:.82rem;letter-spacing:.01em;line-height:1.2">Telestaff</div>
+                        <div class="ukg-logo-text-portal">SDLC Agents Portal</div>
+                    </div>
+                </a>
+                <nav class="d-flex gap-1 ms-1">
+                    <a href="/" class="ukg-nav-link"><i class="bi bi-grid-3x3-gap-fill"></i>Agents</a>
+                    <a href="/history" class="ukg-nav-link"><i class="bi bi-clock-history"></i>History</a>
+                </nav>
+            </div>
+            <div class="d-flex align-items-center gap-3">
+                <span class="ukg-env-badge">LOCAL DEV</span>
+                <div class="ukg-avatar">HJ</div>
+            </div>
+        </div>
+    </div>
+</nav>
+<div th:replace="~{fragments/layout :: demoBanner}"></div>
+
+<div class="container-xl px-4 py-4">
+
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb ukg-breadcrumb">
+            <li class="breadcrumb-item"><a href="/">Agents</a></li>
+            <li class="breadcrumb-item" th:text="${agent.category}">Category</li>
+            <li class="breadcrumb-item active" th:text="${agent.name}">Agent</li>
+        </ol>
+    </nav>
+
+    <div class="row g-4">
+
+        <!-- Form Panel -->
+        <div class="col-lg-8">
+            <div class="ukg-form-card">
+
+                <!-- Header -->
+                <div class="ukg-form-header">
+                    <div class="d-flex align-items-start gap-3">
+                        <div class="ukg-agent-icon-lg" th:text="${agent.icon}">🏗️</div>
+                        <div class="flex-grow-1">
+                            <div class="d-flex align-items-center gap-2 mb-1">
+                                <span class="ukg-phase-badge"
+                                      style="background:rgba(58,214,197,.2);border-color:rgba(58,214,197,.35);color:#3AD6C5"
+                                      th:text="${agent.phase}">Phase</span>
+                                <span class="ukg-category-badge"
+                                      style="background:rgba(255,255,255,.1);border-color:rgba(255,255,255,.2);color:rgba(255,255,255,.65)"
+                                      th:text="${agent.category}">Category</span>
+                            </div>
+                            <h1 class="ukg-form-title" th:text="${agent.name}">Agent Name</h1>
+                            <p class="ukg-form-desc" th:text="${agent.description}">Description</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Form Body -->
+                <div class="ukg-form-body">
+                    <form th:action="@{/agents/{id}/execute(id=${agent.id})}" method="post" id="agentForm">
+
+                        <div th:each="field : ${agent.fields}" class="mb-4">
+                            <label th:for="${field.id}" class="ukg-label">
+                                <span th:text="${field.label}">Label</span>
+                                <span th:if="${field.required}" class="ukg-required">*</span>
+                            </label>
+
+                            <!-- TEXT -->
+                            <div th:if="${field.type.name() == 'TEXT'}">
+                                <input type="text"
+                                       th:id="${field.id}" th:name="${field.id}"
+                                       th:placeholder="${field.placeholder}"
+                                       th:required="${field.required}"
+                                       class="ukg-input"/>
+                            </div>
+
+                            <!-- TEXTAREA -->
+                            <div th:if="${field.type.name() == 'TEXTAREA'}">
+                                <textarea th:id="${field.id}" th:name="${field.id}"
+                                          th:placeholder="${field.placeholder}"
+                                          th:required="${field.required}"
+                                          rows="5" class="ukg-input ukg-textarea"></textarea>
+                            </div>
+
+                            <!-- MARKDOWN -->
+                            <div th:if="${field.type.name() == 'MARKDOWN'}">
+                                <textarea th:id="${field.id}" th:name="${field.id}"
+                                          th:placeholder="${field.placeholder}"
+                                          th:required="${field.required}"
+                                          rows="8" class="ukg-input ukg-textarea ukg-markdown-input"></textarea>
+                                <div class="ukg-input-hint">
+                                    <i class="bi bi-markdown me-1"></i>Markdown supported
+                                </div>
+                            </div>
+
+                            <!-- SELECT -->
+                            <div th:if="${field.type.name() == 'SELECT'}">
+                                <select th:id="${field.id}" th:name="${field.id}"
+                                        th:required="${field.required}"
+                                        class="ukg-input ukg-select">
+                                    <option value="">— Select —</option>
+                                    <option th:each="opt : ${field.options}"
+                                            th:value="${opt}" th:text="${opt}">Option</option>
+                                </select>
+                            </div>
+
+                            <div th:if="${field.helpText != null}"
+                                 class="ukg-input-hint" th:text="${field.helpText}"></div>
+                        </div>
+
+                        <!-- Submit Row -->
+                        <div class="d-flex gap-3 mt-5 pt-4"
+                             style="border-top:2px solid var(--ukg-bright-teal)">
+                            <button type="submit" class="btn ukg-btn-primary ukg-btn-lg" id="submitBtn">
+                                <i class="bi bi-play-fill me-2"></i>Run Agent
+                            </button>
+                            <a href="/" class="btn ukg-btn-ghost ukg-btn-lg">
+                                <i class="bi bi-x me-1"></i>Cancel
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Info Sidebar -->
+        <div class="col-lg-4">
+
+            <!-- Expected Outputs -->
+            <div class="ukg-info-card mb-4">
+                <h5 class="ukg-info-card-title">
+                    <i class="bi bi-box-arrow-up-right me-2"
+                       style="color:var(--ukg-bright-teal)"></i>Expected Outputs
+                </h5>
+                <ul class="ukg-output-list">
+                    <li th:each="out : ${agent.outputs}">
+                        <i class="bi bi-check-circle-fill me-2"></i>
+                        <span th:text="${out}">Output</span>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Tips -->
+            <div class="ukg-info-card mb-4">
+                <h5 class="ukg-info-card-title">
+                    <i class="bi bi-lightbulb-fill me-2"
+                       style="color:var(--ukg-volt);filter:brightness(.7)"></i>Tips for Better Results
+                </h5>
+                <ul class="ukg-tips-list">
+                    <li>Include the Jira ID for context-aware output</li>
+                    <li>Add acceptance criteria to requirements</li>
+                    <li>Mention affected modules or class names</li>
+                    <li>Specify non-functional requirements</li>
+                    <li>Include known constraints or dependencies</li>
+                </ul>
+            </div>
+
+            <!-- Recent Runs -->
+            <div class="ukg-info-card" th:if="${!recentExecutions.isEmpty()}">
+                <h5 class="ukg-info-card-title">
+                    <i class="bi bi-clock-history me-2"
+                       style="color:var(--ukg-bright-teal)"></i>Recent Runs
+                </h5>
+                <div th:each="exec : ${recentExecutions}" class="ukg-recent-run-item">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div class="fs-sm fw-600" style="color:var(--ukg-dark-teal)"
+                             th:text="${exec.agentName}">Agent</div>
+                        <span th:switch="${exec.status.name()}">
+                            <span th:case="'COMPLETED'" class="ukg-status-pill success sm">Done</span>
+                            <span th:case="'RUNNING'"   class="ukg-status-pill running sm">Running</span>
+                            <span th:case="'FAILED'"    class="ukg-status-pill failed sm">Failed</span>
+                            <span th:case="*"           class="ukg-status-pill pending sm">Pending</span>
+                        </span>
+                    </div>
+                    <a th:href="@{/executions/{id}(id=${exec.executionId})}"
+                       class="ukg-link-muted fs-xs">
+                        View result <i class="bi bi-arrow-right"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    document.getElementById('agentForm').addEventListener('submit', function () {
+        const btn = document.getElementById('submitBtn');
+        btn.disabled = true;
+        btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2" style="width:.9rem;height:.9rem"></span>Launching Agent...';
+    });
+
+    // Auto-grow textareas
+    document.querySelectorAll('.ukg-textarea').forEach(ta => {
+        ta.addEventListener('input', function () {
+            this.style.height = 'auto';
+            this.style.height = Math.min(this.scrollHeight, 380) + 'px';
+        });
+    });
+</script>
+</body>
+</html>

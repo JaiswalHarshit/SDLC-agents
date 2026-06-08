@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title th:text="${execution.agentName} + ' — UKG SDLC Portal'">Execution — UKG SDLC Portal</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"/>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&amp;display=swap" rel="stylesheet"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css"/>
+    <link href="/css/ukg-theme.css" rel="stylesheet"/>
+</head>
+<body class="ukg-body">
+
+<!-- ═══════════════ NAVBAR ═══════════════ -->
+<nav class="ukg-navbar sticky-top">
+    <div class="container-xl px-4 h-100">
+        <div class="d-flex align-items-center justify-content-between h-100">
+            <div class="d-flex align-items-center gap-3">
+                <a href="/" class="d-flex align-items-center gap-3 text-decoration-none">
+                    <div class="ukg-wordmark">
+                        <span class="ukg-wordmark-letters">UKG</span>
+                        <span class="ukg-wordmark-tm">™</span>
+                    </div>
+                    <div style="width:1px;height:28px;background:rgba(255,255,255,.18);flex-shrink:0"></div>
+                    <div class="lh-sm">
+                        <div class="fw-600 text-white" style="font-size:.82rem;letter-spacing:.01em;line-height:1.2">Telestaff</div>
+                        <div class="ukg-logo-text-portal">SDLC Agents Portal</div>
+                    </div>
+                </a>
+                <nav class="d-flex gap-1 ms-1">
+                    <a href="/" class="ukg-nav-link"><i class="bi bi-grid-3x3-gap-fill"></i>Agents</a>
+                    <a href="/history" class="ukg-nav-link"><i class="bi bi-clock-history"></i>History</a>
+                </nav>
+            </div>
+            <div class="d-flex align-items-center gap-3">
+                <span class="ukg-env-badge">LOCAL DEV</span>
+                <div class="ukg-avatar">HJ</div>
+            </div>
+        </div>
+    </div>
+</nav>
+<div th:replace="~{fragments/layout :: demoBanner}"></div>
+
+<div class="container-xl px-4 py-4">
+
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb ukg-breadcrumb">
+            <li class="breadcrumb-item"><a href="/">Agents</a></li>
+            <li class="breadcrumb-item" th:text="${execution.agentName}">Agent</li>
+            <li class="breadcrumb-item active">Execution</li>
+        </ol>
+    </nav>
+
+    <div class="row g-4">
+
+        <!-- Main Output Panel -->
+        <div class="col-lg-8">
+
+            <!-- Status Header -->
+            <div class="ukg-exec-header mb-4">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="ukg-exec-status-icon" id="statusIcon">
+                        <div class="ukg-pulse-ring"></div>
+                        <i class="bi bi-cpu-fill"></i>
+                    </div>
+                    <div class="flex-grow-1">
+                        <h1 class="ukg-exec-title" th:text="${execution.agentName}">Agent</h1>
+                        <div class="ukg-exec-meta">
+                            <span class="ukg-exec-status-text" id="statusText">
+                                Initializing agent...
+                            </span>
+                            <span class="mx-2 text-muted">·</span>
+                            <span class="fs-xs font-monospace text-muted"
+                                  th:text="${execution.executionId}">id</span>
+                            <span class="mx-2 text-muted">·</span>
+                            <span class="fs-xs text-muted" id="elapsedTime">0s</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Progress Steps -->
+                <div class="ukg-progress-steps">
+                    <div class="ukg-step active" id="step1">
+                        <i class="bi bi-check-circle-fill"></i> Received
+                    </div>
+                    <div class="ukg-step-connector"></div>
+                    <div class="ukg-step" id="step2">
+                        <i class="bi bi-circle"></i> Planning
+                    </div>
+                    <div class="ukg-step-connector"></div>
+                    <div class="ukg-step" id="step3">
+                        <i class="bi bi-circle"></i> Generating
+                    </div>
+                    <div class="ukg-step-connector"></div>
+                    <div class="ukg-step" id="step4">
+                        <i class="bi bi-circle"></i> Complete
+                    </div>
+                </div>
+            </div>
+
+            <!-- Output Card -->
+            <div class="ukg-output-card">
+                <div class="ukg-output-toolbar">
+                    <div class="d-flex align-items-center gap-2">
+                        <i class="bi bi-file-earmark-text"
+                           style="color:var(--ukg-bright-teal)"></i>
+                        <span class="fw-600 fs-sm" style="color:var(--ukg-dark-teal)">Agent Output</span>
+                        <span class="ukg-char-count" id="charCount">0 chars</span>
+                    </div>
+                    <div class="d-flex gap-2" id="outputActions" style="display:none!important">
+                        <button class="ukg-toolbar-btn" onclick="copyOutput()">
+                            <i class="bi bi-clipboard me-1"></i>Copy
+                        </button>
+                        <button class="ukg-toolbar-btn" onclick="downloadOutput()">
+                            <i class="bi bi-download me-1"></i>Download
+                        </button>
+                        <button class="ukg-toolbar-btn" onclick="toggleRaw()" id="rawBtn">
+                            <i class="bi bi-code me-1"></i>Raw
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Thinking -->
+                <div class="ukg-thinking" id="thinkingIndicator">
+                    <div class="ukg-thinking-dots">
+                        <span></span><span></span><span></span>
+                    </div>
+                    <span class="ukg-thinking-text" id="thinkingText">
+                        Agent is thinking...
+                    </span>
+                </div>
+
+                <!-- Live Output -->
+                <div class="ukg-output-body" id="outputBody" style="display:none">
+                    <div id="renderedOutput" class="ukg-markdown-output"
+                         th:classappend="${demoMode} ? ' demo-response' : ''"></div>
+                    <div id="rawOutput" class="ukg-raw-output" style="display:none"></div>
+                    <span class="ukg-cursor" id="streamCursor">▊</span>
+                </div>
+
+                <!-- Error State -->
+                <div class="ukg-error-state" id="errorState" style="display:none">
+                    <i class="bi bi-exclamation-triangle-fill fs-2"
+                       style="color:var(--ukg-bright-teal)"></i>
+                    <h5 class="mt-3" style="color:var(--ukg-dark-teal)">Execution Failed</h5>
+                    <p class="text-muted" id="errorMsg">An unexpected error occurred.</p>
+                    <a th:href="@{/agents/{id}(id=${execution.agentId})}"
+                       class="btn ukg-btn-primary mt-2">Try Again</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sidebar -->
+        <div class="col-lg-4">
+
+            <!-- Execution Details -->
+            <div class="ukg-info-card mb-4">
+                <h5 class="ukg-info-card-title">
+                    <i class="bi bi-info-circle-fill me-2"
+                       style="color:var(--ukg-bright-teal)"></i>Execution Details
+                </h5>
+                <dl class="ukg-dl">
+                    <dt>Agent</dt>
+                    <dd th:text="${execution.agentName}">Name</dd>
+                    <dt>Execution ID</dt>
+                    <dd class="font-monospace fs-xs"
+                        th:text="${execution.executionId}">id</dd>
+                    <dt>Status</dt>
+                    <dd><span class="ukg-status-pill running" id="sidebarStatus">Running</span></dd>
+                    <dt>Started</dt>
+                    <dd class="fs-xs" th:text="${execution.startedAt}">time</dd>
+                    <dt>Duration</dt>
+                    <dd id="sidebarDuration">—</dd>
+                </dl>
+            </div>
+
+            <!-- Inputs -->
+            <div class="ukg-info-card mb-4">
+                <h5 class="ukg-info-card-title">
+                    <i class="bi bi-card-text me-2"
+                       style="color:var(--ukg-bright-teal)"></i>Inputs
+                    <button class="ukg-collapse-btn ms-auto"
+                            data-bs-toggle="collapse" data-bs-target="#inputsCollapse">
+                        <i class="bi bi-chevron-down"></i>
+                    </button>
+                </h5>
+                <div class="collapse show" id="inputsCollapse">
+                    <dl class="ukg-dl mt-1" th:if="${execution.inputs != null}">
+                        <div th:each="entry : ${execution.inputs}">
+                            <dt th:text="${entry.key}">Key</dt>
+                            <dd class="ukg-input-preview" th:text="${entry.value}">Value</dd>
+                        </div>
+                    </dl>
+                </div>
+            </div>
+
+            <!-- Actions -->
+            <div class="ukg-info-card">
+                <h5 class="ukg-info-card-title">
+                    <i class="bi bi-lightning-charge-fill me-2"
+                       style="color:var(--ukg-volt);filter:brightness(.75)"></i>Actions
+                </h5>
+                <div class="d-flex flex-column gap-2 mt-2">
+                    <a th:href="@{/agents/{id}(id=${execution.agentId})}"
+                       class="btn ukg-btn-ghost w-100">
+                        <i class="bi bi-arrow-repeat me-1"></i>Run Again
+                    </a>
+                    <a href="/" class="btn ukg-btn-ghost w-100">
+                        <i class="bi bi-grid-3x3-gap-fill me-1"></i>All Agents
+                    </a>
+                    <a href="/history" class="btn ukg-btn-ghost w-100">
+                        <i class="bi bi-clock-history me-1"></i>History
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Copy Toast -->
+<div class="toast-container position-fixed top-0 end-0 p-3" style="z-index:9999">
+    <div id="copyToast" class="toast align-items-center border-0" role="alert"
+         style="background:var(--ukg-dark-teal);color:white">
+        <div class="d-flex">
+            <div class="toast-body fw-600">
+                <i class="bi bi-check2-circle me-2" style="color:var(--ukg-bright-teal)"></i>
+                Copied to clipboard!
+            </div>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto"
+                    data-bs-dismiss="toast"></button>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/marked@11.2.0/marked.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+<script th:inline="javascript">
+    // ── Marked config ──────────────────────────────────────────────────
+    const renderer = new marked.Renderer();
+
+    renderer.table = (header, body) =>
+        `<div class="table-responsive"><table class="table table-sm table-bordered ukg-md-table">` +
+        `<thead>${header}</thead><tbody>${body}</tbody></table></div>`;
+
+    renderer.code = (code, lang) => {
+        const hl = (lang && hljs.getLanguage(lang))
+            ? hljs.highlight(code, { language: lang }).value
+            : hljs.highlightAuto(code).value;
+        return `<div class="ukg-code-block">` +
+               `<div class="ukg-code-lang">${lang || 'code'}</div>` +
+               `<pre><code class="hljs">${hl}</code></pre></div>`;
+    };
+
+    marked.use({ renderer, breaks: true, gfm: true });
+
+    // ── Server-rendered execution state (set once, never mutated) ─────
+    const executionId     = /*[[${execution.executionId}]]*/ 'unknown';
+    const agentId         = /*[[${execution.agentId}]]*/     '';
+    const executionStatus = /*[[${execution.status.name()}]]*/ 'PENDING';
+    // ISO-8601 string — new Date() can parse it in all browsers
+    const startedAtIso    = /*[[${execution.startedAt}]]*/ null;
+
+    // ── State ──────────────────────────────────────────────────────────
+    let rawMarkdown = '';
+    let isRaw       = false;
+    let streamDone  = false;
+    // Anchor to the actual server-side start time so the timer is correct
+    // when re-opening a tab against a running or completed execution.
+    let startTime = startedAtIso ? new Date(startedAtIso).getTime() : Date.now();
+
+    // CLI-backed agents: named sub-agents (--agent flag) + direct CLI prompts
+    const CLI_AGENT_IDS = new Set([
+        'customer-issue-analyzer',
+        'feature-design-hld', 'feature-design-lld', 'design-review',
+        'story-breakdown', 'defect-fix-designer', 'test-plan-generator',
+        'code-review', 'release-notes', 'sprint-readiness', 'production-incident'
+    ]);
+    const isCliAgent = CLI_AGENT_IDS.has(agentId);
+
+    const thinkingMessages = isCliAgent ? [
+        'Starting ce-issue-analyser agent...',
+        'Connecting to Jira MCP server...',
+        'Fetching ticket data...',
+        'Searching GitHub for related PRs...',
+        'Querying Confluence runbooks...',
+        'Running Seeker code intelligence...',
+        'Compiling developer handoff report...'
+    ] : [
+        'Analyzing your request...',
+        'Reviewing Telestaff patterns...',
+        'Consulting domain knowledge...',
+        'Generating structured output...',
+        'Applying engineering expertise...',
+        'Finalizing the response...'
+    ];
+    let thinkingIdx = 0;
+
+    // ── Restore correct UI state when re-opening a running/completed execution ──
+    // setStep is a function declaration so it's hoisted — safe to call here.
+    const isAlreadyTerminal = executionStatus === 'COMPLETED' || executionStatus === 'FAILED';
+
+    if (isAlreadyTerminal) {
+        // Show a neutral holding message; the SSE replay will render output
+        // and the 'done' event will apply the final COMPLETED/FAILED styling.
+        document.getElementById('statusText').textContent = 'Loading output...';
+        setStep('step2', 'Planning', true);
+        setStep('step3', 'Generating', true);
+    } else if (executionStatus === 'RUNNING') {
+        // Skip straight to the generating step — planning has already happened.
+        setStep('step2', 'Planning', true);
+        setStep('step3', 'Generating', true, true);
+        document.getElementById('statusText').textContent = 'Agent is working...';
+    }
+
+    const elapsedEl = document.getElementById('elapsedTime');
+    const timerInterval = setInterval(() => {
+        if (!streamDone)
+            elapsedEl.textContent = Math.floor((Date.now() - startTime) / 1000) + 's';
+    }, 1000);
+
+    const thinkingInterval = setInterval(() => {
+        if (!streamDone) {
+            document.getElementById('thinkingText').textContent =
+                thinkingMessages[thinkingIdx++ % thinkingMessages.length];
+        }
+    }, 2200);
+
+    // ── SSE stream ─────────────────────────────────────────────────────
+    const evtSource = new EventSource('/executions/' + executionId + '/stream');
+
+    function renderMarkdown() {
+        const html = marked.parse(rawMarkdown);
+        document.getElementById('renderedOutput').innerHTML = html;
+        document.getElementById('rawOutput').textContent   = rawMarkdown;
+        document.getElementById('charCount').textContent   =
+            rawMarkdown.length.toLocaleString() + ' chars';
+        const body = document.getElementById('outputBody');
+        body.scrollTop = body.scrollHeight;
+    }
+
+    evtSource.addEventListener('chunk', e => {
+        if (rawMarkdown === '') {
+            // first chunk — switch from thinking to output view
+            document.getElementById('thinkingIndicator').style.display = 'none';
+            document.getElementById('outputBody').style.display = 'block';
+            setStep('step2', 'Planning', true);
+            setStep('step3', 'Generating', true, true); // spinning
+            document.getElementById('statusText').textContent = 'Generating response...';
+        }
+        rawMarkdown += e.data;
+        renderMarkdown();
+    });
+
+    evtSource.addEventListener('done', e => {
+        evtSource.close();
+        streamDone = true;
+        clearInterval(thinkingInterval);
+        clearInterval(timerInterval);
+
+        const elapsed  = Math.floor((Date.now() - startTime) / 1000);
+        const isFailed = e.data === 'failed';
+
+        elapsedEl.textContent = elapsed + 's';
+
+        // Cursor off
+        const cursor = document.getElementById('streamCursor');
+        if (cursor) cursor.style.display = 'none';
+
+        // Steps done
+        setStep('step3', 'Generating', true);
+        setStep('step4', 'Complete', !isFailed);
+
+        // Status text
+        document.getElementById('statusText').textContent =
+            isFailed ? 'Failed' : 'Completed in ' + elapsed + 's';
+
+        // Status icon
+        const icon    = document.getElementById('statusIcon');
+        const ring    = icon.querySelector('.ukg-pulse-ring');
+        const ico     = icon.querySelector('i');
+        if (ring) ring.style.display = 'none';
+        ico.className = isFailed
+            ? 'bi bi-x-circle-fill'
+            : 'bi bi-check-circle-fill';
+        ico.style.color = isFailed ? '#ef5350' : 'var(--ukg-bright-teal)';
+
+        // Sidebar
+        const ssp = document.getElementById('sidebarStatus');
+        ssp.className = isFailed ? 'ukg-status-pill failed' : 'ukg-status-pill success';
+        ssp.textContent = isFailed ? 'Failed' : 'Completed';
+        document.getElementById('sidebarDuration').textContent = elapsed + 's';
+
+        // Error state
+        if (!rawMarkdown || rawMarkdown.trim() === '') {
+            document.getElementById('outputBody').style.display = 'none';
+            document.getElementById('thinkingIndicator').style.display = 'none';
+            document.getElementById('errorState').style.removeProperty('display');
+        }
+
+        // Show toolbar
+        document.getElementById('outputActions').style.removeProperty('display');
+
+        renderMarkdown();
+        document.querySelectorAll('pre code').forEach(el => hljs.highlightElement(el));
+    });
+
+    evtSource.onerror = () => {
+        if (!streamDone) {
+            document.getElementById('statusText').textContent =
+                'Connection lost — refresh to check status';
+        }
+    };
+
+    // Only animate the planning step for genuinely new (PENDING) executions.
+    // Re-opened RUNNING or COMPLETED executions already have correct step state above.
+    if (executionStatus === 'PENDING') {
+        setTimeout(() => {
+            setStep('step2', 'Planning', true, true);
+            document.getElementById('statusText').textContent = 'Agent is planning...';
+        }, 600);
+    }
+
+    function setStep(id, label, active, spinning) {
+        const el = document.getElementById(id);
+        if (!el) return;
+        if (active) el.classList.add('active');
+        const icon = spinning
+            ? '<i class="bi bi-arrow-repeat ukg-spin"></i>'
+            : '<i class="bi bi-check-circle-fill"></i>';
+        el.innerHTML = icon + ' ' + label;
+    }
+
+    // ── Actions ────────────────────────────────────────────────────────
+    function copyOutput() {
+        navigator.clipboard.writeText(rawMarkdown).then(() => {
+            new bootstrap.Toast(document.getElementById('copyToast'), { delay: 2500 }).show();
+        });
+    }
+
+    function downloadOutput() {
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(new Blob([rawMarkdown], { type: 'text/markdown' }));
+        a.download = 'ukg-sdlc-' + executionId + '.md';
+        a.click();
+    }
+
+    function toggleRaw() {
+        isRaw = !isRaw;
+        document.getElementById('renderedOutput').style.display = isRaw ? 'none' : 'block';
+        document.getElementById('rawOutput').style.display      = isRaw ? 'block' : 'none';
+        document.getElementById('rawBtn').innerHTML = isRaw
+            ? '<i class="bi bi-eye me-1"></i>Rendered'
+            : '<i class="bi bi-code me-1"></i>Raw';
+    }
+</script>
+</body>
+</html>

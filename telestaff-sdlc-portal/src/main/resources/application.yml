@@ -1,0 +1,65 @@
+server:
+  port: 9090
+  servlet:
+    context-path: /
+
+spring:
+  application:
+    name: Telestaff SDLC Agents Portal
+  thymeleaf:
+    cache: false
+    mode: HTML
+    prefix: classpath:/templates/
+    suffix: .html
+  mvc:
+    async:
+      request-timeout: 300000
+  task:
+    execution:
+      pool:
+        core-size: 10
+        max-size: 50
+        queue-capacity: 100
+      thread-name-prefix: sdlc-agent-
+
+app:
+  # Set to true (or pass --app.demo-mode=true at startup) to short-circuit all
+  # agent executions to pre-canned responses — no Claude CLI or Anthropic API calls.
+  # Example: mvn spring-boot:run -Dspring-boot.run.arguments="--app.demo-mode=true"
+  demo-mode: false
+
+  # ── Demo streaming phase timings ──────────────────────────────────────────
+  # Phase 1 — "planning" silence before the first line appears (ms)
+  demo-initial-delay-ms: 7000
+  # Phase 2 — ms between each streamed line (120 ms × ~60 lines ≈ 7 s active)
+  demo-streaming-delay-ms: 120
+  # Phase 3 — mid-generation pause fired after this % of lines (simulates "thinking")
+  demo-pause-mid-after-percent: 28
+  # Phase 3 — duration of the mid-generation pause (ms)
+  demo-pause-mid-delay-ms: 2500
+
+claude:
+  cli:
+    # Full path to the local claude CLI binary (nvm-managed on this machine)
+    path: ${CLAUDE_CLI_PATH:/Users/harshit.jaiswal/.nvm/versions/node/v24.14.0/bin/claude}
+    # Working directory — must be the repo that owns the claude agents (CLAUDE.md + .claude/agents/)
+    working-dir: ${TELESTAFF_REPO_PATH:/Users/harshit.jaiswal/Codebase/IJ26/workforce-telestaff}
+
+anthropic:
+  api-key: ${ANTHROPIC_API_KEY:}
+  model: ${ANTHROPIC_MODEL:claude-opus-4-5}
+  max-tokens: ${ANTHROPIC_MAX_TOKENS:4096}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      show-details: always
+
+logging:
+  level:
+    com.ukg.telestaff: INFO
+    org.springframework.web: WARN
